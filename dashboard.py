@@ -6,6 +6,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
+from dotenv import load_dotenv
+from chatbot_agent import process_query
+
+load_dotenv()
+
 
 # Page config
 st.set_page_config(page_title="Dynamic Pricing Dashboard", layout="wide", page_icon="💰")
@@ -134,7 +139,7 @@ with col4:
 st.markdown("---")
 
 # Tabs
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Price Recommendations", "💰 Profit Impact", "📈 Volume Pricing", "🎯 Pricing Status"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Price Recommendations", "💰 Profit Impact", "📈 Volume Pricing", "🎯 Pricing Status", "💬 AI Assistant"])
 
 # TAB 1: Price Recommendations
 with tab1:
@@ -290,6 +295,57 @@ with tab4:
         st.metric("Optimally Priced", len(optimal), f"{len(optimal)/len(test)*100:.1f}%")
     with col3:
         st.metric("Overpriced", len(overpriced), f"{len(overpriced)/len(test)*100:.1f}%")
+
+# TAB 5: AI Chatbot
+with tab5:
+    st.subheader("💬 AI Assistant - Ask Questions About this Dashboard")
+    
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    
+    # Chat container
+    chat_container = st.container(height=400)
+    
+    with chat_container:
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+    
+    # Suggested questions - RIGHT ABOVE INPUT
+    st.markdown("### 💡 Try asking:")
+    cols = st.columns(3)
+    
+    suggested_questions = [
+        "What is the total revenue opportunity?",
+        "Show me underpriced materials",
+        "What are the top 5 opportunities?",
+        "Which materials have highest margins?",
+        "What is the pricing status breakdown?",
+        "Show me the price ranges"
+    ]
+    
+    for idx, question in enumerate(suggested_questions):
+        with cols[idx % 3]:
+            if st.button(question, key=f"suggest_{idx}", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": question})
+                with st.spinner("Thinking..."):
+                    response = process_query(question)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                st.rerun()
+    
+    # Chat input - AT THE BOTTOM
+    prompt = st.chat_input("Ask about materials, pricing, margins...")
+    
+    if prompt:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.spinner("Thinking..."):
+            response = process_query(prompt)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.rerun()
+
+
+
 
 # Footer
 st.markdown("---")

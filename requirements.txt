@@ -3,3 +3,9 @@ pandas
 numpy 
 plotly 
 scikit-learn 
+strands-agents>=1.0.0
+requests
+python-dotenv
+boto3
+flask
+flask-cors
