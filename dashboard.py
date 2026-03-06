@@ -63,8 +63,7 @@ def get_model_comparison(_train, _test):
     
     models = {
         'Gradient Boosting': GradientBoostingRegressor(n_estimators=100, max_depth=5, random_state=42),
-        'Random Forest': RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42),
-        'Linear Regression': LinearRegression()
+        'Random Forest': RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42)
     }
     
     results = []
@@ -90,6 +89,8 @@ test['Current_Margin'] = ((test['Unit_Price'] - test['Unit_Cost']) / test['Unit_
 test['Predicted_Margin'] = ((test['Predicted_Price'] - test['Unit_Cost']) / test['Predicted_Price'] * 100)
 test['Price_Change_%'] = ((test['Predicted_Price'] - test['Unit_Price']) / test['Unit_Price'] * 100)
 test['Revenue_Impact'] = (test['Predicted_Price'] - test['Unit_Price']) * test['Order Quantity']
+# Filter out negative margin predictions
+test = test[test['Predicted_Margin'] > 0].copy()
 
 # Metrics
 current_revenue = (test['Unit_Price'] * test['Order Quantity']).sum()
@@ -248,7 +249,7 @@ with tab3:
     pricing_df = pd.DataFrame({
         'Quantity': quantities,
         'Price (₹)': [f"₹{p:.2f}" for p in prices],
-        'Discount %': [f"{((prices[0]-p)/prices[0]*100):.1f}%" for p in prices]
+        'Price Change %': [f"{((p-prices[0])/prices[0]*100):+.1f}%" for p in prices]  # Changed formula
     })
     st.dataframe(pricing_df, use_container_width=True)
 

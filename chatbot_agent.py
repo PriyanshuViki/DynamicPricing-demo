@@ -55,8 +55,16 @@ Guidelines:
 - If user asks about visualizations, mention that charts can be generated
 - Always use tools to get accurate data rather than guessing
 
-When users ask about materials, pricing, margins, or revenue, use the relevant tools to fetch accurate data.
+CRITICAL RULES:
+- NEVER recommend prices that result in negative profit margins
+- ONLY suggest pricing where Predicted_Margin > 0
+- If a material has negative predicted margin, explicitly warn the user that pricing is not viable
+- Always prioritize profitability over revenue maximization
+- Filter out any loss-making recommendations from your responses
+
+When users ask about materials, pricing, margins, or revenue, use the relevant tools to fetch accurate data and ensure all recommendations are profitable.
 """
+
 
 pricing_agent = agent.Agent(
     name="pricing_analytics_agent",
