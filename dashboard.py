@@ -208,7 +208,11 @@ with tab2:
         'Revenue_Impact': 'sum',
         'Price_Change_%': 'mean',
         'Material_Clean': 'count'
-    }).rename(columns={'Material_Clean': 'Transactions'}).reset_index().sort_values('Revenue_Impact', ascending=False).head(10)
+    }).rename(columns={'Material_Clean': 'Transactions'}).reset_index()
+
+    # Filter only positive revenue impacts
+    top_opps = top_opps[top_opps['Revenue_Impact'] > 0].sort_values('Revenue_Impact', ascending=False).head(10)
+
     top_opps.columns = ['Material ID', 'Material Name', 'Revenue Impact', 'Price Change %', 'Transactions']
     top_opps['Revenue Impact'] = top_opps['Revenue Impact'].apply(lambda x: f"₹{x/1e6:.2f}M")
     top_opps['Price Change %'] = top_opps['Price Change %'].apply(lambda x: f"{x:+.1f}%")
